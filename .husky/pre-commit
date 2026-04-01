@@ -1,0 +1,10 @@
+if [ "$SKIP_COMMIT_CHECK" = "true" ]; then
+  echo "✅ Commitizen detected, running lint-staged"
+  pnpm lint-staged
+  # node tools/fix-peer-workspace/index.mjs
+  exit 0
+else
+  echo "❌ Direct git commit disabled!"
+  echo "Please use: pnpm commit!"
+  exit 1
+fi
