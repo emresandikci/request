@@ -3,6 +3,12 @@
   "private": false,
   "version": "0.1.0",
   "type": "module",
+  "author": "emresandikci",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emresandikci/request/issues"
+  },
+  "homepage": "https://github.com/emresandikci/request#readme",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,12 +21,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/emresandikci/request.git"
+    "url": "git+https://github.com/emresandikci/request.git"
   },
   "publishConfig": {
     "access": "public"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
