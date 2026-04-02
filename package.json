@@ -13,6 +13,14 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emresandikci/request.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["dist"],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -25,7 +33,9 @@
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,md}\"",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run",
+    "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
