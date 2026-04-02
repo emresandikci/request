@@ -1,7 +1,7 @@
 {
   "name": "@emstack/request",
   "private": false,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -34,6 +34,7 @@
     "@commitlint/config-conventional": "catalog:",
     "@semantic-release/changelog": "catalog:",
     "@semantic-release/git": "catalog:",
+    "@semantic-release/github": "catalog:",
     "@semantic-release/npm": "catalog:",
     "@semantic-release/release-notes-generator": "catalog:",
     "@typescript-eslint/eslint-plugin": "catalog:",
