@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // Point workspace dep directly at library source — no build step needed
-      '@emstack/lite-request': resolve(__dirname, '../../src/index.ts'),
+      '@emstack/request': resolve(__dirname, '../../src/index.ts'),
     },
   },
 });

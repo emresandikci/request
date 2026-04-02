@@ -6,7 +6,7 @@ import {
   AdapterResolver,
   BackoffStrategy,
   MemoryCacheStore,
-} from '@emstack/lite-request';
+} from '@emstack/request';
 
 /**
  * Adapter stack:

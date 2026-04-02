@@ -1,4 +1,4 @@
-import { HttpError, NetworkError, TimeoutError } from '@emstack/lite-request';
+import { HttpError, NetworkError, TimeoutError } from '@emstack/request';
 import { api } from './client.ts';
 
 export interface Todo {

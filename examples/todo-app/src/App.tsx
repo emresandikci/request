@@ -22,7 +22,7 @@ export function App() {
           <h1 style={styles.title}>Todo App</h1>
           <p style={styles.subtitle}>
             Powered by{' '}
-            <code style={styles.code}>@emstack/lite-request</code>
+            <code style={styles.code}>@emstack/request</code>
             {' '}+{' '}
             <a href="https://jsonplaceholder.typicode.com" target="_blank" rel="noopener" style={styles.link}>
               JSONPlaceholder
