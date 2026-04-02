@@ -37,6 +37,8 @@
     "@semantic-release/git": "catalog:",
     "@semantic-release/npm": "catalog:",
     "@semantic-release/release-notes-generator": "catalog:",
+    "@typescript-eslint/eslint-plugin": "catalog:",
+    "@typescript-eslint/parser": "catalog:",
     "commitizen": "catalog:",
     "conventional-changelog-conventionalcommits": "catalog:",
     "cz-conventional-changelog": "catalog:",
@@ -48,7 +50,14 @@
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.1.2",
     "lint-staged": "catalog:",
-    "husky": "catalog:"
+    "husky": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "typescript-eslint": "^8.46.4",
+    "@eslint/js": "^9.39.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "globals": "catalog:"
   },
   "config": {
     "commitizen": {
