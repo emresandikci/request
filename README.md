@@ -202,4 +202,4 @@ For contribution workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-No license file is currently included in this repository. Add a license before publishing publicly.
+MIT. See [LICENSE](LICENSE).
