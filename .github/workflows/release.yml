@@ -4,17 +4,15 @@ on:
   push:
     branches:
       - main
-
+permissions:
+  contents: write # to be able to publish a GitHub release
+  issues: write # to be able to comment on released issues
+  pull-requests: write # to be able to comment on released pull requests
+  actions: read # read status to push notificaiton
+  id-token: write # to be able to authenticate with npm registry
 jobs:
   release:
-    permissions:
-      contents: write # to be able to publish a GitHub release
-      issues: write # to be able to comment on released issues
-      pull-requests: write # to be able to comment on released pull requests
-      actions: read # read status to push notificaiton
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v6
         with:
@@ -24,7 +22,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install PNPM
         run: npm install -g pnpm
@@ -59,4 +57,3 @@ jobs:
       #   env:
       #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       #   if: always()
-        
