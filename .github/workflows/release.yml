@@ -48,16 +48,9 @@ jobs:
           else
             echo "has_release=false" >> "$GITHUB_OUTPUT"
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Bump Semantic Version & Publish
         if: steps.release_check.outputs.has_release == 'true'
         run: pnpm release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       # - name: Slack Deployment Status Action
       #   uses: 8398a7/action-slack@v3.15.1
       #   with:
