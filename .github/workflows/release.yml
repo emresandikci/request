@@ -36,18 +36,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Check If Version Changed
-        id: release_check
-        run: |
-          set -o pipefail
-          pnpm release:dry-run | tee /tmp/semantic-release-dry-run.log
-          if grep -q "The next release version is" /tmp/semantic-release-dry-run.log; then
-            echo "has_release=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_release=false" >> "$GITHUB_OUTPUT"
-          fi
       - name: Bump Semantic Version & Publish
-        if: steps.release_check.outputs.has_release == 'true'
         run: pnpm release
       # - name: Slack Deployment Status Action
       #   uses: 8398a7/action-slack@v3.15.1
