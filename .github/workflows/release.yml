@@ -1,0 +1,69 @@
+name: Auto Version & Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      actions: read # read status to push notificaiton
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Check If Version Changed
+        id: release_check
+        run: |
+          set -o pipefail
+          pnpm release:dry-run | tee /tmp/semantic-release-dry-run.log
+          if grep -q "The next release version is" /tmp/semantic-release-dry-run.log; then
+            echo "has_release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_release=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Bump Semantic Version & Publish
+        if: steps.release_check.outputs.has_release == 'true'
+        run: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Slack Deployment Status Action
+      #   uses: 8398a7/action-slack@v3.15.1
+      #   with:
+      #     status: ${{ job.status }}
+      #     fields: all
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #   if: always()
+        
