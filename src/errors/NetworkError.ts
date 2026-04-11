@@ -1,4 +1,5 @@
 import type { RequestConfig } from "../types/index.ts";
+import { sanitizeRequestConfig } from "./sanitizeRequestConfig.ts";
 
 export class NetworkError extends Error {
   readonly name = "NetworkError";
@@ -6,6 +7,6 @@ export class NetworkError extends Error {
 
   constructor(message: string, config: RequestConfig, cause?: unknown) {
     super(message, { cause });
-    this.config = config;
+    this.config = sanitizeRequestConfig(config);
   }
 }

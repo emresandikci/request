@@ -1,5 +1,6 @@
 import type { HttpResponse } from "../core/HttpResponse.ts";
 import type { RequestConfig } from "../types/index.ts";
+import { sanitizeRequestConfig } from "./sanitizeRequestConfig.ts";
 
 export class HttpError<TRes = unknown, TReq = unknown> extends Error {
   readonly name = "HttpError";
@@ -14,7 +15,7 @@ export class HttpError<TRes = unknown, TReq = unknown> extends Error {
   ) {
     super(message);
     this.response = response;
-    this.config = config;
+    this.config = sanitizeRequestConfig(config);
     this.status = response.status;
   }
 }
