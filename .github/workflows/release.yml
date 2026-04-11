@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      
+
 permissions:
   contents: read # for checkout
 jobs:
@@ -16,14 +16,14 @@ jobs:
       pull-requests: write # to be able to comment on released pull requests
       id-token: write # to enable use of OIDC for trusted publishing and npm provenance
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Use Node.js 22
-        uses: actions/setup-node@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 'lts/*'
 
       - name: Install PNPM
         run: npm install -g pnpm
