@@ -1,5 +1,12 @@
 # @emstack/request
 
+[![npm downloads](https://img.shields.io/npm/dm/@emstack/request?style=flat-square)](https://www.npmjs.com/package/@emstack/request)
+[![GitHub stars](https://img.shields.io/github/stars/emresandikci/request?style=flat-square&logo=github)](https://github.com/emresandikci/request/stargazers)
+[![npm version](https://img.shields.io/npm/v/@emstack/request?style=flat-square)](https://www.npmjs.com/package/@emstack/request)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@emstack/request?style=flat-square)](https://bundlephobia.com/package/@emstack/request)
+[![license](https://img.shields.io/npm/l/@emstack/request?style=flat-square)](./LICENSE)
+[![Node.js](https://img.shields.io/node/v/@emstack/request?style=flat-square)](https://nodejs.org/)
+
 Lightweight, fetch-based HTTP client for TypeScript projects with strict typing, composable adapters, and interceptor/hook pipelines.
 
 ## Highlights
