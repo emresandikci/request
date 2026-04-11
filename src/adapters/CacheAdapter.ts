@@ -36,6 +36,26 @@ const defaultShouldCache = (request: HttpRequest<unknown>): boolean =>
 const defaultKeyFn = (request: HttpRequest<unknown>): string =>
   `${request.method}:${request.url}`;
 
+function allowsCachingByHeaders(
+  headers: Readonly<Record<string, string>>,
+): boolean {
+  const cacheControl = headers["cache-control"]?.toLowerCase() ?? "";
+  if (
+    cacheControl.includes("no-store") ||
+    cacheControl.includes("no-cache") ||
+    cacheControl.includes("private")
+  ) {
+    return false;
+  }
+
+  const pragma = headers["pragma"]?.toLowerCase() ?? "";
+  if (pragma.includes("no-cache")) {
+    return false;
+  }
+
+  return true;
+}
+
 /**
  * Decorator adapter that wraps any {@link IHttpAdapter} and caches successful
  * responses in a pluggable {@link ICacheStore}.
@@ -91,7 +111,7 @@ export class CacheAdapter implements IHttpAdapter {
     // --- Cache miss: fetch and conditionally store ---
     const response = await this.inner.send<TRes>(request);
 
-    if (response.ok) {
+    if (response.ok && allowsCachingByHeaders(response.headers)) {
       // Clone before reading so the original stream remains consumable by the caller
       const bodyText = await response.raw.clone().text();
       this.store.set(key, {
