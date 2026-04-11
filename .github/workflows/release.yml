@@ -4,15 +4,17 @@ on:
   push:
     branches:
       - main
+      
 permissions:
-  contents: write # to be able to publish a GitHub release
-  issues: write # to be able to comment on released issues
-  pull-requests: write # to be able to comment on released pull requests
-  actions: read # read status to push notificaiton
-  id-token: write # to be able to authenticate with npm registry
+  contents: read # for checkout
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for trusted publishing and npm provenance
     steps:
       - uses: actions/checkout@v6
         with:
@@ -22,7 +24,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install PNPM
         run: npm install -g pnpm
@@ -37,12 +38,6 @@ jobs:
         run: pnpm build
 
       - name: Bump Semantic Version & Publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm release
-      # - name: Slack Deployment Status Action
-      #   uses: 8398a7/action-slack@v3.15.1
-      #   with:
-      #     status: ${{ job.status }}
-      #     fields: all
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #   if: always()
