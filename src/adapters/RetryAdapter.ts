@@ -67,9 +67,15 @@ export interface RetryAdapterOptions {
 // Default condition — underscore prefixes satisfy noUnusedParameters
 const defaultRetryOn = (
   error: unknown,
-  // _request: HttpRequest<unknown>,
+  request: HttpRequest<unknown>,
   // _attempt: number,
 ): boolean => {
+  const isIdempotent =
+    request.method === "GET" ||
+    request.method === "HEAD" ||
+    request.method === "OPTIONS";
+  if (!isIdempotent) return false;
+
   if (error instanceof NetworkError) return true;
   if (error instanceof TimeoutError) return true;
   if (error instanceof HttpError) {
