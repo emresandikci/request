@@ -15,6 +15,9 @@ import type { IHttpAdapter } from "../adapters/IHttpAdapter.ts";
 
 const DEFAULT_VALIDATE_STATUS = (status: number): boolean =>
   status >= 200 && status < 300;
+const DEFAULT_QUERY_SERIALIZER = new QuerySerializer();
+const ABSOLUTE_SCHEME_RE = /^[a-z][a-z\d+.-]*:/i;
+const FORBIDDEN_SCHEME_RE = /^(javascript|data|file|ftp|gopher|blob|mailto):/i;
 
 export class HttpClient {
   private readonly config: HttpClientConfig;
@@ -103,9 +106,10 @@ export class HttpClient {
       const finalConfig = await configPromise;
 
       // --- Phase 4: build URL with query params ---
-      const serializer = finalConfig.querySerializer ?? new QuerySerializer();
+      const serializer =
+        finalConfig.querySerializer ?? DEFAULT_QUERY_SERIALIZER;
       let url = finalConfig.url;
-      if (finalConfig.params && Object.keys(finalConfig.params).length > 0) {
+      if (finalConfig.params && hasAnyParam(finalConfig.params)) {
         const qs = serializer.serialize(finalConfig.params);
         if (qs) {
           url = `${url}${url.includes("?") ? "&" : "?"}${qs}`;
@@ -259,25 +263,45 @@ function mergeHooks(
   override?: HttpClientHooks,
 ): HttpClientHooks | undefined {
   if (!base && !override) return undefined;
+
+  const beforeRequest = mergeHookList(
+    base?.beforeRequest,
+    override?.beforeRequest,
+  );
+  const afterResponse = mergeHookList(
+    base?.afterResponse,
+    override?.afterResponse,
+  );
+  const beforeError = mergeHookList(base?.beforeError, override?.beforeError);
+
   return {
-    beforeRequest: [
-      ...(base?.beforeRequest ?? []),
-      ...(override?.beforeRequest ?? []),
-    ],
-    afterResponse: [
-      ...(base?.afterResponse ?? []),
-      ...(override?.afterResponse ?? []),
-    ],
-    beforeError: [
-      ...(base?.beforeError ?? []),
-      ...(override?.beforeError ?? []),
-    ],
+    ...(beforeRequest ? { beforeRequest } : {}),
+    ...(afterResponse ? { afterResponse } : {}),
+    ...(beforeError ? { beforeError } : {}),
   };
 }
 
 function resolveUrl(baseURL?: string, path?: string): string {
   if (!path) return baseURL ?? "";
+  if (FORBIDDEN_SCHEME_RE.test(path)) {
+    throw new TypeError(`Forbidden URL scheme in path: ${path}`);
+  }
+  if (ABSOLUTE_SCHEME_RE.test(path)) {
+    if (/^https?:\/\//i.test(path)) return path;
+    throw new TypeError(`Unsupported URL scheme in path: ${path}`);
+  }
   if (!baseURL) return path;
-  if (/^https?:\/\//i.test(path)) return path;
   return `${baseURL.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+}
+
+function hasAnyParam(params: Record<string, unknown>): boolean {
+  for (const _key in params) {
+    return true;
+  }
+  return false;
+}
+
+function mergeHookList<T>(base?: T[], override?: T[]): T[] | undefined {
+  if (!base?.length && !override?.length) return undefined;
+  return [...(base ?? []), ...(override ?? [])];
 }
