@@ -129,6 +129,29 @@ describe("URL resolution", () => {
       .calls[0][0] as HttpRequest;
     expect(req.url).toBe("https://other.example.com/data");
   });
+
+  it("rejects forbidden schemes even when baseURL is set", async () => {
+    const adapter = mockAdapter();
+    const client = new HttpClient(
+      { baseURL: "https://api.example.com" },
+      adapter,
+    );
+
+    await expect(client.get("javascript:alert(1)")).rejects.toBeInstanceOf(
+      TypeError,
+    );
+    expect(adapter.send).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsupported absolute schemes", async () => {
+    const adapter = mockAdapter();
+    const client = new HttpClient({}, adapter);
+
+    await expect(client.get("ftp://example.com/file")).rejects.toBeInstanceOf(
+      TypeError,
+    );
+    expect(adapter.send).not.toHaveBeenCalled();
+  });
 });
 
 // ---------- Headers ----------

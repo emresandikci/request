@@ -16,6 +16,13 @@ function makeRequest(): HttpRequest {
   });
 }
 
+function makeRequestWithMethod(method: "GET" | "POST"): HttpRequest {
+  return new HttpRequest({
+    url: "https://api.example.com/data",
+    method,
+  });
+}
+
 function okResponse(): HttpResponse {
   return new HttpResponse(new Response('{"ok":true}', { status: 200 }), true);
 }
@@ -79,6 +86,19 @@ describe("RetryAdapter", () => {
     const result = await adapter.send(makeRequest());
     expect(result.ok).toBe(true);
     expect(inner.send).toHaveBeenCalledTimes(2);
+  });
+
+  it("does NOT retry by default for non-idempotent methods", async () => {
+    const inner = cycleAdapter([
+      { reject: networkError() },
+      { resolve: okResponse() },
+    ]);
+    const adapter = new RetryAdapter(inner, { maxRetries: 2, delay: 0 });
+
+    await expect(
+      adapter.send(makeRequestWithMethod("POST")),
+    ).rejects.toBeInstanceOf(NetworkError);
+    expect(inner.send).toHaveBeenCalledTimes(1);
   });
 
   it("retries on TimeoutError", async () => {

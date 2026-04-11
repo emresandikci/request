@@ -24,10 +24,21 @@ describe("HttpError", () => {
     expect(err.response.status).toBe(422);
   });
 
-  it("carries the original config", () => {
-    const config = { url: "/test", timeout: 5000 };
+  it("sanitizes sensitive headers in config", () => {
+    const config = {
+      url: "/test",
+      timeout: 5000,
+      headers: {
+        Authorization: "Bearer secret-token",
+        "x-api-key": "apikey-value",
+        "x-request-id": "req-123",
+      },
+    };
     const err = new HttpError("msg", makeResponse(500), config);
-    expect(err.config).toBe(config);
+    expect(err.config).not.toBe(config);
+    expect(err.config.headers?.Authorization).toBe("[REDACTED]");
+    expect(err.config.headers?.["x-api-key"]).toBe("[REDACTED]");
+    expect(err.config.headers?.["x-request-id"]).toBe("req-123");
   });
 });
 
@@ -44,6 +55,19 @@ describe("NetworkError", () => {
     const cause = new TypeError("fetch failed");
     const err = new NetworkError("fail", {}, cause);
     expect(err.cause).toBe(cause);
+  });
+
+  it("redacts sensitive headers in config", () => {
+    const err = new NetworkError("fail", {
+      headers: {
+        cookie: "session=abc",
+        "x-auth-token": "xyz",
+        "x-trace-id": "trace",
+      },
+    });
+    expect(err.config.headers?.cookie).toBe("[REDACTED]");
+    expect(err.config.headers?.["x-auth-token"]).toBe("[REDACTED]");
+    expect(err.config.headers?.["x-trace-id"]).toBe("trace");
   });
 });
 
@@ -65,5 +89,17 @@ describe("TimeoutError", () => {
   it("timeout defaults to 0 when config.timeout is undefined", () => {
     const err = new TimeoutError({});
     expect(err.timeout).toBe(0);
+  });
+
+  it("redacts sensitive headers in config", () => {
+    const err = new TimeoutError({
+      timeout: 100,
+      headers: {
+        "Proxy-Authorization": "Basic abc",
+        "x-safe": "ok",
+      },
+    });
+    expect(err.config.headers?.["Proxy-Authorization"]).toBe("[REDACTED]");
+    expect(err.config.headers?.["x-safe"]).toBe("ok");
   });
 });

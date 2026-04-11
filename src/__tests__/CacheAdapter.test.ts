@@ -74,6 +74,48 @@ describe("CacheAdapter", () => {
     expect(inner.send).toHaveBeenCalledTimes(2);
   });
 
+  it("does NOT cache responses with cache-control: no-store", async () => {
+    const inner = singleAdapter(
+      new HttpResponse(
+        new Response('{"id":1}', {
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "cache-control": "no-store",
+          },
+        }),
+        true,
+      ),
+    );
+    const adapter = new CacheAdapter(inner, { ttl: 60_000 });
+    const req = makeGetRequest();
+
+    await adapter.send(req);
+    await adapter.send(req);
+    expect(inner.send).toHaveBeenCalledTimes(2);
+  });
+
+  it("does NOT cache responses with cache-control: private", async () => {
+    const inner = singleAdapter(
+      new HttpResponse(
+        new Response('{"id":1}', {
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "cache-control": "private, max-age=60",
+          },
+        }),
+        true,
+      ),
+    );
+    const adapter = new CacheAdapter(inner, { ttl: 60_000 });
+    const req = makeGetRequest();
+
+    await adapter.send(req);
+    await adapter.send(req);
+    expect(inner.send).toHaveBeenCalledTimes(2);
+  });
+
   it("custom shouldCache enables caching for POST", async () => {
     const inner = singleAdapter(makeOkResponse("{}", 201));
     const adapter = new CacheAdapter(inner, {
